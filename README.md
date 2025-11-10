@@ -68,185 +68,185 @@ Sensors → I2C → Acq Task → Queue → Fusion Task → Queue → Control Tas
 - **I2C Communication**: < 5ms (400kHz, DMA optimized)
 
 ### Resource Usage
-- **CPU利用率**: 提升 ~20% (通过任务优化)
-- **内存占用**: 
-  - 代码: ~45KB Flash
-  - 数据: ~12KB SRAM
-  - 堆栈: ~8KB (所有任务)
+- **CPU Utilization**: Improved ~20% (through task optimization)
+- **Memory Usage**: 
+  - Code: ~45KB Flash
+  - Data: ~12KB SRAM
+  - Stack: ~8KB (all tasks)
 
-### 功耗管理
-- **活跃模式**: ~15mA @ 3.3V
-- **空闲模式**: ~8mA @ 3.3V (Tickless)
-- **睡眠模式**: ~2mA @ 3.3V
-- **平均功耗**: 降低 ~12%
+### Power Management
+- **Active Mode**: ~15mA @ 3.3V
+- **Idle Mode**: ~8mA @ 3.3V (Tickless)
+- **Sleep Mode**: ~2mA @ 3.3V
+- **Average Power**: Reduced ~12%
 
-### 通信性能
-- **MQTT发布频率**: 10Hz
-- **数据包大小**: ~200 bytes JSON
-- **连接可靠性**: > 99.5%
-- **重连时间**: < 5秒
+### Communication Performance
+- **MQTT Publishing Rate**: 10Hz
+- **Packet Size**: ~200 bytes JSON
+- **Connection Reliability**: > 99.5%
+- **Reconnection Time**: < 5 seconds
 
-## 快速开始
+## Quick Start
 
-### 1. 环境准备
+### 1. Environment Setup
 
-**必需工具**:
-- STM32CubeIDE 1.10+ 或 arm-none-eabi-gcc
+**Required Tools**:
+- STM32CubeIDE 1.10+ or arm-none-eabi-gcc
 - STM32CubeProgrammer
 - Git
 
-**可选工具**:
-- STM32CubeMX (配置生成)
-- Tera Term / PuTTY (串口监控)
-- Wireshark (网络分析)
+**Optional Tools**:
+- STM32CubeMX (Configuration generation)
+- Tera Term / PuTTY (Serial monitoring)
+- Wireshark (Network analysis)
 
-### 2. 编译固件
+### 2. Build Firmware
 
 ```bash
-# 克隆项目
+# Clone project
 git clone <repository-url>
 cd RTOS
 
-# 使用STM32CubeIDE
-# 1. 导入项目: File → Import → Existing Project
-# 2. 选择 firmware/ 文件夹
-# 3. 右键项目 → Build Project
+# Using STM32CubeIDE
+# 1. Import project: File → Import → Existing Project
+# 2. Select firmware/ folder
+# 3. Right-click project → Build Project
 
-# 或使用命令行 (需要配置工具链)
+# Or using command line (requires toolchain configuration)
 cd firmware
 make clean
 make all
 ```
 
-### 3. 烧录程序
+### 3. Flash Program
 
-**使用STM32CubeProgrammer**:
+**Using STM32CubeProgrammer**:
 ```bash
-# 连接ST-Link
+# Connect ST-Link
 STM32_Programmer_CLI -c port=SWD -w firmware.bin 0x08000000 -v -rst
 ```
 
-**使用STM32CubeIDE**:
-- 右键项目 → Run As → STM32 C/C++ Application
+**Using STM32CubeIDE**:
+- Right-click project → Run As → STM32 C/C++ Application
 
-### 4. 配置Wi-Fi和MQTT
+### 4. Configure Wi-Fi and MQTT
 
-编辑 `firmware/connectivity/wifi_config.h`:
+Edit `firmware/connectivity/wifi_config.h`:
 ```c
-#define WIFI_SSID        "您的WiFi名称"
-#define WIFI_PASSWORD    "您的WiFi密码"
+#define WIFI_SSID        "YourWiFiName"
+#define WIFI_PASSWORD    "YourWiFiPassword"
 #define MQTT_BROKER      "broker.hivemq.com"
 #define MQTT_PORT        1883
 #define MQTT_TOPIC       "stm32/sensor/telemetry"
 ```
 
-### 5. 运行监控工具
+### 5. Run Monitoring Tools
 
-**Python MQTT监控** (需要安装依赖):
+**Python MQTT Monitoring** (requires dependency installation):
 ```bash
-# 安装Python依赖
+# Install Python dependencies
 pip install paho-mqtt matplotlib numpy
 
-# 运行监控工具
+# Run monitoring tool
 python tools/mqtt_monitor.py --plot --csv sensor_data.csv
 ```
 
-**PowerShell功耗测试**:
+**PowerShell Power Testing**:
 ```powershell
 # Windows PowerShell
 .\tools\measure_power.ps1 -SerialPort COM3 -TestDuration 300 -Verbose
 ```
 
-## 测试和验证
+## Testing and Validation
 
-### 功能测试
+### Functional Testing
 ```bash
-# 运行完整性能测试 (需要Python依赖)
+# Run comprehensive performance test (requires Python dependencies)
 python tools/performance_test.py --serial COM3 --duration 300 --verbose
 
-# 单独测试MQTT通信
+# Test MQTT communication separately
 python tools/mqtt_monitor.py --broker broker.hivemq.com --topic stm32/sensor/telemetry
 ```
 
-### 性能基准测试
+### Performance Benchmark Testing
 ```bash
-# 延迟测试 - 目标 < 50ms
-# CPU使用率 - 目标 < 80%  
-# 内存使用 - 目标 > 50% 空闲
-# 功耗 - 目标 < 20mA 平均
+# Latency test - target < 50ms
+# CPU usage - target < 80%  
+# Memory usage - target > 50% free
+# Power consumption - target < 20mA average
 ```
 
-## 故障排除
+## Troubleshooting
 
-### 常见问题
+### Common Issues
 
-**1. 编译错误**
+**1. Compilation Errors**
 ```bash
-# 检查工具链版本
+# Check toolchain version
 arm-none-eabi-gcc --version
 
-# 清理重新编译
+# Clean and rebuild
 make clean && make all
 ```
 
-**2. MQTT连接失败**
-- 检查Wi-Fi模块固件版本
-- 验证网络连接和代理地址
-- 检查防火墙设置
+**2. MQTT Connection Failure**
+- Check Wi-Fi module firmware version
+- Verify network connection and broker address
+- Check firewall settings
 
-**3. 传感器读取失败**
-- 验证I2C连接和地址
-- 检查上拉电阻 (通常板上已有)
-- 使用示波器检查I2C信号
+**3. Sensor Reading Failure**
+- Verify I2C connections and addresses
+- Check pull-up resistors (usually on-board)
+- Use oscilloscope to check I2C signals
 
-**4. 系统重启或挂起**
-- 检查栈溢出 (增加栈大小)
-- 验证中断优先级配置
-- 启用看门狗调试输出
+**4. System Reset or Hang**
+- Check stack overflow (increase stack size)
+- Verify interrupt priority configuration
+- Enable watchdog debug output
 
-### 调试技巧
+### Debug Tips
 
-**SWO跟踪设置**:
+**SWO Trace Setup**:
 ```c
-// 在main.c中启用
-ITM_SendChar(ch);  // 输出字符到SWO
+// Enable in main.c
+ITM_SendChar(ch);  // Output character to SWO
 ```
 
-**UART调试输出**:
+**UART Debug Output**:
 ```c
-// 重定向printf到UART
+// Redirect printf to UART
 int _write(int file, char *ptr, int len) {
     HAL_UART_Transmit(&huart1, (uint8_t*)ptr, len, HAL_MAX_DELAY);
     return len;
 }
 ```
 
-**任务状态监控**:
+**Task Status Monitoring**:
 ```c
-// 获取任务运行时统计
+// Get task runtime statistics
 char *buffer = pvPortMalloc(1024);
 vTaskGetRunTimeStats(buffer);
 printf("%s", buffer);
 vPortFree(buffer);
 ```
 
-## 高级配置
+## Advanced Configuration
 
-### 自定义传感器采样率
+### Custom Sensor Sampling Rate
 ```c
-// 在main.h中修改
-#define SENSOR_SAMPLE_RATE_HZ    200  // 默认100Hz
-#define FUSION_UPDATE_RATE_HZ    100  // 默认50Hz
+// Modify in main.h
+#define SENSOR_SAMPLE_RATE_HZ    200  // Default 100Hz
+#define FUSION_UPDATE_RATE_HZ    100  // Default 50Hz
 ```
 
-### 功耗模式配置
+### Power Mode Configuration
 ```c
-// 启用更激进的功耗优化
+// Enable more aggressive power optimization
 #define ENABLE_DEEP_SLEEP        1
 #define TICKLESS_IDLE_THRESHOLD  5    // ticks
 ```
 
-### MQTT消息格式自定义
+### MQTT Message Format Customization
 ```json
 {
   "sequence": 12345,
@@ -265,61 +265,49 @@ vPortFree(buffer);
 }
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 RTOS/
-├── firmware/                    # 嵌入式固件
+├── firmware/                    # Embedded firmware
 │   ├── src/
-│   │   ├── main.c              # 主程序入口
-│   │   ├── main.h              # 主头文件
-│   │   ├── FreeRTOSConfig.h    # FreeRTOS配置
-│   │   └── tasks/              # 任务模块
-│   │       ├── sensor_acq.c/.h # 传感器采集
-│   │       ├── fusion.c/.h     # 数据融合
-│   │       ├── control.c/.h    # 控制逻辑
-│   │       ├── telemetry.c/.h  # 遥测通信
-│   │       └── watchdog.c/.h   # 看门狗监控
-│   ├── drivers/                # 传感器驱动
-│   │   ├── lsm6dsl.c/.h       # IMU驱动
-│   │   ├── lps22hb.c/.h       # 气压传感器 (TODO)
-│   │   └── hts221.c/.h        # 湿度传感器 (TODO)
-│   └── connectivity/           # 通信模块
-│       ├── wifi_interface.c/.h # Wi-Fi接口 (TODO)
-│       └── mqtt_client.c/.h   # MQTT客户端 (TODO)
-├── tools/                      # 测试工具
-│   ├── mqtt_monitor.py         # MQTT数据监控
-│   ├── performance_test.py     # 性能测试
-│   └── measure_power.ps1       # 功耗测量 (Windows)
-├── docs/                       # 项目文档
-└── README.md                   # 本文档
+│   │   ├── main.c              # Main program entry
+│   │   ├── main.h              # Main header file
+│   │   ├── FreeRTOSConfig.h    # FreeRTOS configuration
+│   │   └── tasks/              # Task modules
+│   │       ├── sensor_acq.c/.h # Sensor acquisition
+│   │       ├── fusion.c/.h     # Data fusion
+│   │       ├── control.c/.h    # Control logic
+│   │       ├── telemetry.c/.h  # Telemetry communication
+│   │       └── watchdog.c/.h   # Watchdog monitoring
+│   ├── drivers/                # Sensor drivers
+│   │   ├── lsm6dsl.c/.h       # IMU driver
+│   │   ├── lps22hb.c/.h       # Pressure sensor (TODO)
+│   │   └── hts221.c/.h        # Humidity sensor (TODO)
+│   └── connectivity/           # Communication modules
+│       ├── wifi_interface.c/.h # Wi-Fi interface (TODO)
+│       └── mqtt_client.c/.h   # MQTT client (TODO)
+├── tools/                      # Testing tools
+│   ├── mqtt_monitor.py         # MQTT data monitoring
+│   ├── performance_test.py     # Performance testing
+│   └── measure_power.ps1       # Power measurement (Windows)
+├── docs/                       # Project documentation
+└── README.md                   # This document
 ```
 
-## 贡献指南
+## Contributing Guidelines
 
-1. Fork 项目
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+## Acknowledgments
 
-## 致谢
+- STMicroelectronics - STM32L475E-IoT01A1 evaluation board and HAL library
+- FreeRTOS.org - Real-time operating system kernel
+- HiveMQ - Free MQTT broker service
+- Open source community for various tools and libraries
 
-- STMicroelectronics - STM32L475E-IoT01A1评估板和HAL库
-- FreeRTOS.org - 实时操作系统内核
-- HiveMQ - 免费MQTT代理服务
-- 开源社区的各种工具和库
-
-## 联系方式
-
-- **作者**: Your Name
-- **邮箱**: your.email@example.com
-- **项目链接**: https://github.com/yourusername/stm32-sensor-fusion
-
----
-
-**⚠️ 重要提示**: 本项目用于学习和原型开发。在生产环境中使用前，请进行充分的测试和验证，特别是安全关键应用。
